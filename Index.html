@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>球壇戀人模擬器</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f7edf0;color:#392d34;font-family:"Noto Sans TC",sans-serif}
+header{background:#8d526b;color:white;text-align:center;padding:22px 12px}
+header h1{margin:0;font-size:25px}
+header p{margin:8px 0 0;font-size:13px}
+main{max-width:760px;margin:20px auto;padding:0 14px}
+.panel{background:#fff;border:1px solid #eadbe2;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 15px #6d3b4b0c}
+h2{font-size:19px;margin-top:0;color:#874761}
+label{display:block;font-weight:bold;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d9c6cf;border-radius:9px;font:inherit;background:white}
+button{border:0;border-radius:10px;padding:12px 15px;font:inherit;cursor:pointer}
+.primary{background:#8d526b;color:white;width:100%;margin-top:15px}
+.choice{display:block;width:100%;text-align:left;background:#f8eef2;margin:8px 0;border:1px solid #ead7e0}
+.choice:hover{background:#efd8e2}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.stat{flex:1;min-width:95px;background:#f8eef2;padding:12px;border-radius:10px;text-align:center}
+.stat strong{display:block;font-size:21px;color:#8d526b}
+.story{white-space:pre-line;line-height:1.9}
+.small{font-size:12px;color:#8b7881}
+.phone{border:2px solid #ddc6d1;border-radius:20px;overflow:hidden}
+.phonehead{background:#f3e1e8;padding:13px;font-weight:bold}
+.messages{padding:14px;min-height:90px;background:#fffafc;line-height:1.8}
+.message{background:#f0e5eb;padding:10px 13px;border-radius:12px;margin:7px 0}
+.hidden{display:none}
+footer{text-align:center;color:#987e8b;font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<h1>球壇戀人模擬器</h1>
+<p>二〇二五年・心動、秘密與足球世界</p>
+</header>
+<main>
+<section class="panel" id="setup">
+<h2>建立你的戀愛檔案</h2>
+<p>選擇你的身分與戀愛對象，開始一段屬於你的球壇故事。</p>
+<label>你的名字</label>
+<input id="player" placeholder="輸入你的名字" value="林予安">
+<label>你的身分</label>
+<select id="identity">
+<option>時尚品牌公關</option><option>足球記者</option>
+<option>留學生</option><option>演員</option>
+<option>球隊工作人員</option><option>自由選擇的普通女孩</option>
+</select>
+<label>你的年齡</label>
+<input id="age" type="number" min="18" max="60" value="24">
+<label>選擇秘密戀人</label>
+<select id="boyfriend">
+<option value="佩德里">佩德里｜巴塞隆納</option>
+<option value="加維">加維｜巴塞隆納</option>
+<option value="拉明">拉明・亞馬爾｜巴塞隆納</option>
+<option value="裘德">裘德・貝林厄姆｜皇家馬德里</option>
+<option value="維尼修斯">維尼修斯｜皇家馬德里</option>
+<option value="哈利">哈利・凱恩｜拜仁慕尼黑</option>
+<option value="穆西亞拉">穆西亞拉｜拜仁慕尼黑</option>
+<option value="阿德耶米">阿德耶米｜多特蒙德</option>
+<option value="登貝萊">登貝萊｜巴黎聖日耳曼</option>
+<option value="哈蘭德">哈蘭德｜曼城</option>
+<option value="福登">福登｜曼城</option>
+<option value="薩卡">薩卡｜阿森納</option>
+</select>
+<label>戀愛風格</label>
+<select id="style">
+<option>低調甜蜜，偷偷交往</option>
+<option>從朋友慢慢發展</option>
+<option>互相吃醋的拉扯戀愛</option>
+<option>成熟穩定，認真長久</option>
+</select>
+<button class="primary" onclick="begin()">建立人物並閱讀開場故事</button>
+<p class="small">本遊戲為虛構戀愛模擬，人物互動與情節不代表真實球員的私人生活。</p>
+</section>
+
+<section class="panel hidden" id="intro">
+<h2>你的故事，即將開始</h2>
+<div class="story" id="opening"></div>
+<button class="primary" onclick="startGame()">確認設定，正式開始</button>
+</section>
+
+<section id="game" class="hidden">
+<div class="panel">
+<div class="stats">
+<div class="stat">目前回合<strong id="turn">1 / 50</strong></div>
+<div class="stat">戀愛指數<strong id="love">50</strong></div>
+<div class="stat">信任程度<strong id="trust">50</strong></div>
+<div class="stat">曝光風險<strong id="risk">10</strong></div>
+</div>
+<p id="profile" class="small"></p>
+<h2 id="eventTitle">深夜訊息</h2>
+<div id="eventText" class="story"></div>
+</div>
+
+<div class="panel">
+<h2>你會怎麼做？</h2>
+<div id="choices"></div>
+<label>或輸入自己的行動</label>
+<textarea id="custom" rows="2" placeholder="例如：傳訊息問他今天訓練累不累……"></textarea>
+<button class="primary" onclick="customAction()">執行自己的行動</button>
+</div>
+
+<div class="panel">
+<h2>手機訊息</h2>
+<div class="phone">
+<div class="phonehead" id="phoneName">戀人聊天室</div>
+<div class="messages" id="messages">你們的故事從一則訊息開始。</div>
+</div>
+</div>
+
+<div class="panel">
+<h2>戀愛日記</h2>
+<div id="diary" class="story">今天，是故事的第一頁。</div>
+</div>
+</section>
+
+<section class="panel hidden" id="ending">
+<h2>本次故事告一段落</h2>
+<div id="endingText" class="story"></div>
+<button class="primary" onclick="location.reload()">重新開始另一段戀愛</button>
+</section>
+</main>
+<footer>球壇戀人模擬器・互動文字遊戲</footer>
+
+<script>
+const events=[
+{title:"深夜訊息",text:"訓練結束後，你的手機亮了起來。他傳來一張球場夜景照片，問你今天過得好不好。",a:"溫柔關心他的訓練",b:"開玩笑問他是不是想我了",c:"先不回覆，讓自己忙完",d:"提醒他早點休息",v:[5,4,0,3]},
+{title:"突然的邀約",text:"他說明天下午有一點空檔，想找你見面。但你們最近都很忙，時間很難配合。",a:"安排一場低調的咖啡約會",b:"請他決定地點和時間",c:"告訴他這次真的沒空",d:"提議在安靜的地方散步",v:[5,3,-1,4]},
+{title:"社群上的照片",text:"社群平台出現他與一位女性朋友的合照。留言區開始猜測，你也看見了那張照片。",a:"直接私下問清楚",b:"先冷靜，不急著下結論",c:"故意發一則神祕動態",d:"告訴他你有一點不安",v:[2,5,-3,8]},
+{title:"比賽前夕",text:"重要比賽就在明天。他傳訊息說有點緊張，今晚想和你聊一會兒。",a:"陪他聊天並替他加油",b:"傳一段認真的鼓勵",c:"讓他早點休息，明天再聊",d:"傳一張你們的合照給他",v:[5,4,1,4]},
+{title:"狗仔疑雲",text:"你在餐廳附近似乎看見有人拿著相機。你們原本計畫一起吃晚餐。",a:"改去更安靜的地方",b:"照常吃飯，但保持低調",c:"先取消約會，避免誤會",d:"和他討論彼此能接受的曝光程度",v:[2,5,1,-4]},
+{title:"朋友的關心",text:"你的朋友察覺你最近常常看手機，問你是不是有喜歡的人。你必須決定要說多少。",a:"只透露自己正在戀愛",b:"坦白告訴最信任的朋友",c:"笑著轉移話題",d:"問戀人希望如何保護隱私",v:[2,4,1,3]},
+{title:"久違的約會",text:"兩人終於有半天空檔。你們可以享受普通情侶的日常，不必一直談論足球。",a:"一起逛超市做晚餐",b:"去海邊散步聊天",c:"待在家看電影",d:"讓他帶你看看喜歡的城市角落",v:[6,4,0,2]},
+{title:"未來的話題",text:"聊天時，他問你明年有什麼計畫。你突然意識到，這段感情可能需要更多現實考量。",a:"坦白分享自己的目標",b:"問他是否想過共同的未來",c:"告訴他現在先享受當下",d:"一起討論時間與距離如何安排",v:[4,6,0,2]}
+];
+let state={};
+function begin(){
+const name=document.getElementById("player").value.trim();
+const age=Number(document.getElementById("age").value);
+if(!name){alert("請先輸入你的名字。");return}
+if(age<18||age>60){alert("請輸入18至60歲之間的年齡。");return}
+state={name,age,identity:document.getElementById("identity").value,
+bf:document.getElementById("boyfriend").value,
+style:document.getElementById("style").value,
+turn:1,love:50,trust:50,risk:10,history:[]};
+document.getElementById("setup").classList.add("hidden");
+document.getElementById("intro").classList.remove("hidden");
+document.getElementById("opening").textContent=
+`二〇二五年，${name}在工作結束後，受邀參加一場足球品牌活動。\n\n身為${state.identity}，你原本只打算完成工作，卻在活動後台遇見了${state.bf}。\n\n他記得你剛才說過的話，也注意到你在人群中安靜的笑容。散場後，你收到一則陌生訊息：\n\n「今天很高興認識你。下次有空，可以一起喝咖啡嗎？」\n\n你們的關係還沒有名字，但心動已經悄悄開始。你希望這段${state.style}的戀情，能在忙碌的足球世界裡找到自己的位置。`;
+}
+function startGame(){
+document.getElementById("intro").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+document.getElementById("profile").textContent=
+`${state.name}｜${state.age}歲｜${state.identity}｜戀人：${state.bf}｜風格：${state.style}`;
+document.getElementById("phoneName").textContent=state.bf+" 的聊天室";
+renderEvent();
+}
+function renderEvent(){
+document.getElementById("turn").textContent=state.turn+" / 50";
+document.getElementById("love").textContent=state.love;
+document.getElementById("trust").textContent=state.trust;
+document.getElementById("risk").textContent=state.risk;
+let e=events[Math.floor(Math.random()*events.length)];
+document.getElementById("eventTitle").textContent="第 "+state.turn+" 回合｜"+e.title;
+document.getElementById("eventText").textContent=e.text;
+let choices=document.getElementById("choices");choices.innerHTML="";
+[e.a,e.b,e.c,e.d].forEach((s,i)=>{
+let btn=document.createElement("button");btn.className="choice";btn.textContent="ABCD"[i]+"．"+s;
+btn.onclick=()=>act(s,e.v[i],e.title);choices.appendChild(btn);
+});
+}
+function act(action,delta,title){
+state.love=clamp(state.love+delta,0,100);
+state.trust=clamp(state.trust+Math.round(delta*.7),0,100);
+state.risk=clamp(state.risk+(Math.random()<.35?4:-2),0,100);
+finishTurn(action,title);
+}
+function customAction(){
+let t=document.getElementById("custom").value.trim();
+if(!t){alert("請先輸入你想採取的行動。");return}
+let delta= t.includes("道歉")||t.includes("關心")||t.includes("陪")?5:
+t.includes("分手")?-15:t.includes("公開")?2:3;
+state.love=clamp(state.love+delta,0,100);
+state.trust=clamp(state.trust+3,0,100);
+state.risk=clamp(state.risk+(t.includes("公開")?15:0),0,100);
+document.getElementById("custom").value="";
+finishTurn("你的行動："+t,"自由行動");
+}
+function finishTurn(action,title){
+state.history.push(`第${state.turn}回合：${title}。你選擇了「${action}」。`);
+document.getElementById("messages").innerHTML=
+`<div class="message">${state.bf}：我看到你的訊息了。謝謝你願意跟我說這些。</div>
+<div class="message">${state.name}：${escapeHtml(action)}</div>`;
+document.getElementById("diary").textContent=state.history.slice(-5).join("\n\n");
+if(state.turn>=50){endGame();return}
+state.turn++;
+renderEvent();
+}
+function endGame(){
+document.getElementById("game").classList.add("hidden");
+document.getElementById("ending").classList.remove("hidden");
+let result=state.love>=75&&state.trust>=65?"你們的感情逐漸穩定，開始認真討論共同的未來。":
+state.love>=50?"你們仍在學習理解彼此，這段戀情還有許多可能。":
+"這段關係經歷了不少考驗。你決定先照顧好自己，再思考兩人的未來。";
+if(state.risk>=70)result+=" 這段時間的曝光風險偏高，你們也需要重新討論隱私界線。";
+document.getElementById("endingText").textContent=
+`五十回合結束。\n\n${result}\n\n最終戀愛指數：${state.love}\n最終信任程度：${state.trust}\n最終曝光風險：${state.risk}\n\n謝謝你體驗這段球壇戀愛故事。`;
+}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+</script>
+</body>
+</html>
